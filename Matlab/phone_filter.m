@@ -28,18 +28,19 @@ function [xhat, meas] = phone_filter(calAcc, calGyr, calMag)
   nx = 4;   % Assuming that you use q as state variable.
   % Add your filter settings here.
   T = 0.01;
-  Rw = 1e-2*ones(3);
-  Ra = 1e-3*ones(3);
-  Rm = 1e-9*ones(3);
+  Rw = 1e-7*ones(3);
+  Ra = 1e-6*ones(3);
+  Rm = 1e-3*ones(3);
+ 
+  
   Q = 1e-2*eye(4);
-  mx = 19.44;
-  my = 172.74;
-  mz = 134.94;
-  m0 = [0 17.7 -45.4]';
-%   m0 = [0 sqrt(mx^2 + my^2) mz]'
+  mx = 1814.1;
+  my = 160.5;
+  mz = -1310.3;
+  m0 = [0 sqrt(mx^2 + my^2) mz]'
   L_prev = norm(m0);
-  alpha = 0.1;
-  g0 = [0; 0; 10.2];
+  alpha = 0.01;
+  g0 = [0; 0; 10.18];
   % Current filter state.
   x = [1; 0; 0 ;0];
   P = eye(nx, nx);
@@ -88,7 +89,7 @@ function [xhat, meas] = phone_filter(calAcc, calGyr, calMag)
       acc = data(1, 2:4)';
       
       if ~any(isnan(acc))  % Acc measurements are available.
-         if (acc < 11) %??? Don't know if this is correct, tuning I guess
+         if  abs(acc) < 12 %??? Don't know if this is correct, tuning I guess
             % Do something
             [x, P] = mu_g(x, P, acc, Ra, g0);
             [x, P] = mu_normalizeQ(x, P);
@@ -112,7 +113,7 @@ function [xhat, meas] = phone_filter(calAcc, calGyr, calMag)
       if ~any(isnan(mag))  % Mag measurements are available.
         % Do something
         L = ((1-alpha)*L_prev + alpha*norm(mag));
-        if  abs(L - norm(mag)) > L*0.9 && abs(L - norm(mag)) < L*1.1 %??? Don't know if this is correct, tuning I guess
+        if  abs(L - norm(mag)) < L*0.1 %??? Don't know if this is correct, tuning I guess2
             % Do something
             [x, P] = mu_m(x, P, mag, m0, Rm);
             [x, P] = mu_normalizeQ(x, P);
@@ -122,6 +123,8 @@ function [xhat, meas] = phone_filter(calAcc, calGyr, calMag)
             ownView.setMagDist(1)%When 1, disturbed
         end
         L_prev = L;
+%         [x, P] = mu_m(x, P, mag, m0, Rm);
+%         [x, P] = mu_normalizeQ(x, P);
       end
 
       orientation = data(1, 18:21)';  % Google's orientation estimate.
