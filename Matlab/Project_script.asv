@@ -2,9 +2,8 @@
 % Task 2
 % clc, close all, clear all
 startup();
-% [xhat, meas] = filterTemplate();
-[xhat, meas] = phone_filter(Ra, Rw, Rm);
-
+[xhat, meas] = filterTemplate();
+[xhat, meas] = phone_filter();
 % 
 %%
 clc, clf
@@ -19,9 +18,9 @@ acc_cov = cov(acc_data');
 gyr_cov = cov(gyr_data');
 mag_cov = cov(mag_data');
 
-Ra = zeros(3); Ra(1,1) = acc_cov(1,1); Ra(2,2) = acc_cov(2,2); Ra(3,3) = acc_cov(3,3);
-Rw = zeros(3); Rw(1,1) = gyr_cov(1,1); Rw(2,2) = gyr_cov(2,2); Rw(3,3) = gyr_cov(3,3);
-Rm = zeros(3); Rm(1,1) = mag_cov(1,1); Rm(2,2) = mag_cov(2,2); Rm(3,3) = mag_cov(3,3);
+Ra = zeros(3); Ra(1,1) = acc_cov(1,1); Ra(2,2) = acc_cov(
+Rw = gyr_cov;
+Rm = mag_cov;
 % 
 % k_x = linspace(acc_mean(1,:)-3*sqrt(acc_cov(1,1)),acc_mean(1,:)+3*sqrt(acc_cov(1,1)));
 % k_y = linspace(acc_mean(2,:)-3*sqrt(acc_cov(2,2)),acc_mean(2,:)+3*sqrt(acc_cov(2,2)));

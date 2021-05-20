@@ -1,4 +1,4 @@
-function [xhat, meas] = phone_filter(Ra, Rw, Rm)
+function [xhat, meas] = phone_filter(calAcc, calGyr, calMag)
 % FILTERTEMPLATE  Filter template
 %
 % This is a template function for how to collect and filter data
@@ -28,13 +28,12 @@ function [xhat, meas] = phone_filter(Ra, Rw, Rm)
   nx = 4;   % Assuming that you use q as state variable.
   % Add your filter settings here.
   T = 0.01;
-%   Rw = 1e-5*ones(3); fcn input instead
-%   Ra = 1e-6*ones(3);
-%   Rm = 1e-1*ones(3);
+  Rw = 1e-7*ones(3);
+  Ra = 1e-6*ones(3);
+  Rm = 1e-3*ones(3);
  
   
-%   Q = 1e-2*eye(4);
-  Q = Rw;
+  Q = 1e-2*eye(4);
   mx = -53;
   my = -14;
   mz = -130;
@@ -86,8 +85,9 @@ function [xhat, meas] = phone_filter(Ra, Rw, Rm)
       if isempty(t0)  % Initialize t0
         t0 = t;
       end
-      
+
       acc = data(1, 2:4)';
+      
       if ~any(isnan(acc))  % Acc measurements are available.
          if  abs(acc) < 12 %??? Don't know if this is correct, tuning I guess
             % Do something
@@ -99,7 +99,6 @@ function [xhat, meas] = phone_filter(Ra, Rw, Rm)
             ownView.setAccDist(1)%When 1, disturbed
         end
       end
-
       gyr = data(1, 5:7)';
       if ~any(isnan(gyr))  % Gyro measurements are available.
         % Do something
@@ -109,7 +108,7 @@ function [xhat, meas] = phone_filter(Ra, Rw, Rm)
         [x, P] = tu_qw_no_omega(x, P, Q);
         [x, P] = mu_normalizeQ(x, Q);
       end
-      
+
       mag = data(1, 8:10)';
       if ~any(isnan(mag))  % Mag measurements are available.
         % Do something
